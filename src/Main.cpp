@@ -1,30 +1,26 @@
 #include <iostream>
-#include <assimp/include/Importer.hpp>
-#include <assimp/include/scene.h>
-#include <assimp/include/postprocess.h> 
+#include <SDL2/SDL.h>
+#include <SDL2_ttf/SDL_ttf.h>
+#include <SDL2/SDL_opengl.h>
+#include <OpenGL/glu.h>
+#include <GLKit/GLKMath.h>
+#include <assimp/Importer.hpp>      // C++ importer interface
+#include <assimp/scene.h>           // Output data structure
+#include <assimp/postprocess.h>     // Post processing flags
 
-int main() 
+#include "engine/Engine.hpp"
+#include "Logger.hpp"
+#include "Game.hpp"
+ 
+int main(int argc, char *argv[])
 {
-  std::string pFile = "/Users/celsodantas/code/cpp/topaz/monkey.dae";
-  Assimp::Importer importer;
+  Topaz::Engine engine;
+  engine.initialize();
 
-  const aiScene* scene = importer.ReadFile( pFile, 
-        aiProcess_CalcTangentSpace       | 
-        aiProcess_Triangulate            |
-        aiProcess_JoinIdenticalVertices  |
-        aiProcess_SortByPType);
+  Topaz::Game game = Topaz::Game(engine);
+  game.run();
 
-  // If the import failed, report it
-  if(!scene)
-  {
-    std::cout << importer.GetErrorString() << std::endl;
-    return false;
-  } else {
-    std::cout << "Scene loaded" << std::endl;
-  }
-
-  aiMesh* mesh = scene->mMeshes[0];
-  int iMeshFaces = mesh->mNumFaces;
-
-  std::cout << iMeshFaces << std::endl;
+  engine.quit();
+  
+  return 0;
 }
