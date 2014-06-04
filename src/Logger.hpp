@@ -2,6 +2,7 @@
 #define LOGGER_HPP
 
 #include <iostream>
+#include <SDL2/SDL.h>
 
 namespace Topaz {
 

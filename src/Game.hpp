@@ -11,4 +11,4 @@ namespace Topaz {
   };
 }
 
-#endif GAME_HPP
+#endif

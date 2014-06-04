@@ -4,9 +4,9 @@ BINDIR = ./bin
 CPP_COMPILER = llvm-g++
 CPP_FLAGS	= -Wall -Wextra -pedantic -framework OpenGL -framework SDL2 -framework SDL2_ttf -g
 HEADERS=-I lib
-LDFLAGS=-Llib/assimp/lib
-LINKFLAGS= -lassimp.3.0.1
-CPPFILES=src/Main.cpp src/Engine.cpp src/Game.cpp
+LDFLAGS=-Llib/assimp/lib -Llib/glfw
+LINKFLAGS= -lassimp.3.0.1 -lglfw
+CPPFILES=src/Main.cpp src/engine/Engine.cpp src/Game.cpp src/Player.cpp
 
 all: Game.o
 
@@ -16,3 +16,6 @@ Game.o:
 
 clean: 
 	rm -f $(BINDIR)/*.o
+
+build_and_run: clean Game.o
+	./$(BINDIR)/Game.o
