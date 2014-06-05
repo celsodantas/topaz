@@ -8,7 +8,7 @@ namespace Topaz {
   public:
     Player();
 
-    std::string _3dModelPath = "/Users/celsodantas/code/cpp/topaz/monkey.dae";
+    std::string _3dModelPath = "/Users/celsodantas/code/cpp/topaz/rabbit.dae";
   };
 }
 

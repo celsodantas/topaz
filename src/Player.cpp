@@ -56,6 +56,12 @@ Topaz::Player::Player()
   glfwMakeContextCurrent(_window);
 
 
+  ///
+  glEnable( GL_DEPTH_TEST );
+  glClearDepth( 1.0f );
+  glDepthFunc( GL_LEQUAL );
+
+
   //////////////////////////////////
 
 
@@ -127,24 +133,23 @@ Topaz::Player::Player()
 
   // EBO
   {
-    // create array with faces
-    // have to convert from Assimp format to array
-    unsigned int *faceArray;
-    faceArray = (unsigned int *)malloc(sizeof(unsigned int) * mesh->mNumFaces * 3);
-    unsigned int faceIndex = 0;
-    
-    for (unsigned int t = 0; t < mesh->mNumFaces; ++t) {
-        const aiFace* face = &mesh->mFaces[t];
-    
-        memcpy(&faceArray[faceIndex], face->mIndices,3 * sizeof(unsigned int));
-        faceIndex += 3;
+    unsigned int *indices = (unsigned int *)malloc(mesh->mNumFaces * sizeof(unsigned int) * 3);
+    int idx = 0;
+    for (int i = 0; i < mesh->mNumFaces; ++i)
+    {
+        aiFace &face = mesh->mFaces[i];
+        assert(face.mNumIndices == 3);
+        for (int j = 0; j < face.mNumIndices; ++j)
+        {
+          indices[idx++] = face.mIndices[j];
+        }
     }
 
     GLuint ebo = 0;
     glGenBuffers(1, &ebo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * mesh->mNumFaces * 3, faceArray, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * mesh->mNumFaces * 3, indices, GL_STATIC_DRAW);
   }  
 
   // VBO (uploading to GPU)
@@ -179,23 +184,34 @@ Topaz::Player::Player()
 
   printf("%i\n", mesh->mNumFaces);
 
-  float matrix[] = {
-    1.0f, 0.0f, 0.0f, 0.0f, // first column
-    0.0f, 1.0f, 0.0f, 0.0f, // second column
-    0.0f, 0.0f, 1.0f, 0.0f, // third column
-    0.0f, 0.0f, 0.0f, 1.0f  // fourth column
-  };
+  glm::mat4 matrix(1.f);
 
-  float speed = 1.0f; // move at 1 unit per second
+  glm::mat4 perspective = glm::perspective(45.f, 4.f/3.f, 0.1f, 100.f);
+
+  // Camera matrix
+  glm::mat4 view = glm::lookAt(
+      glm::vec3(3,2,2), // Camera is at (4,3,3), in World Space
+      glm::vec3(0,0,0), // and looks at the origin
+      glm::vec3(0,1,0)  // Head is up (set to 0,-1,0 to look upside-down)
+  );
+
+  glm::mat4 mvp = perspective * view;
+
+  int cameraLocBuffer = glGetUniformLocation(program, "mvp");
+  glUniformMatrix4fv(cameraLocBuffer, 1, GL_FALSE, glm::value_ptr(mvp));
+
+  float speed = 10.0f; // move at 1 unit per second
   float last_position = 0.0f;
-  int matrix_location = glGetUniformLocation(program, "matrix");
+  int matrixLocBuffer = glGetUniformLocation(program, "matrix");
+
+
 
   while (!glfwWindowShouldClose(_window)) 
   {
     // add a timer for doing animation
-    static double previous_seconds = glfwGetTime ();
-    double current_seconds = glfwGetTime ();
-    double elapsed_seconds = current_seconds - previous_seconds;
+    static float previous_seconds = glfwGetTime ();
+    float current_seconds = glfwGetTime ();
+    float elapsed_seconds = current_seconds - previous_seconds;
     previous_seconds = current_seconds;
 
     // reverse direction when going to far left or right
@@ -203,10 +219,9 @@ Topaz::Player::Player()
       speed = -speed;
     }
 
-    matrix[6] = elapsed_seconds * speed + last_position;
-    matrix[9] = elapsed_seconds * speed + last_position;
-    last_position = matrix[6];
-    glUniformMatrix4fv(matrix_location, 1, GL_FALSE, matrix);
+    matrix = glm::rotate(matrix, elapsed_seconds * speed, glm::vec3(0,1,0));
+
+    glUniformMatrix4fv(matrixLocBuffer, 1, GL_FALSE, glm::value_ptr(matrix));
     glUseProgram(program);
 
     glBindVertexArray(vao);
