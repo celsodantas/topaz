@@ -8,11 +8,6 @@
 #include <assimp/scene.h>           // Output data structure
 #include <assimp/postprocess.h>     // Post processing flags
 
-// #include <SDL2/SDL.h>
-#define GL_GLEXT_PROTOTYPES 1
-// #include <SDL2/SDL_opengl.h>
-
-#include <OpenGL/glu.h>
 #define GLFW_INCLUDE_GLCOREARB
 #include <glfw/glfw3.h>
 #include "engine/ShaderLoader.hpp"
@@ -26,14 +21,15 @@
 typedef unsigned char BYTE;
 using namespace std;
 
-Topaz::Player::Player() 
+Topaz::Player::Player()
 {
+  // Initializing window
   GLFWwindow   *_window;
 
   int _winWidth  = 800;
   int _winHeight = 600;
 
-    if ( glfwInit() < 0 ) 
+    if ( glfwInit() < 0 )
   {
       std::cout << "Error initializing glfwInit() in " << __FILE__ << ":" << __LINE__ << std::endl;
       exit( EXIT_FAILURE );
@@ -44,15 +40,15 @@ Topaz::Player::Player()
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-  
-  if ( !(_window = glfwCreateWindow(800, 600, "Title", 0, 0)) ) 
+
+  if ( !(_window = glfwCreateWindow(800, 600, "Title", 0, 0)) )
   {
       // closeWindow();
       glfwTerminate();
       std::cout << "Error opening windows glfwCreateWindow() in " << __FILE__ << ":" << __LINE__ << std::endl;
       exit( EXIT_FAILURE );
   }
-    
+
   glfwMakeContextCurrent(_window);
 
 
@@ -63,21 +59,21 @@ Topaz::Player::Player()
 
 
   //////////////////////////////////
-
+  // Assimp = Collada importer
 
   Assimp::Importer importer;
 
-  const aiScene* scene = importer.ReadFile( _3dModelPath, 
-        aiProcess_CalcTangentSpace       | 
+  const aiScene* scene = importer.ReadFile( _3dModelPath,
+        aiProcess_CalcTangentSpace       |
         aiProcess_Triangulate            |
         aiProcess_JoinIdenticalVertices  |
         aiProcess_SortByPType);
 
   if(!scene)
   {
-    Logger::print( importer.GetErrorString() );
-  } 
-  else 
+    Logger::print(importer.GetErrorString());
+  }
+  else
   {
     Logger::print("Scene loaded");
   }
@@ -95,44 +91,17 @@ Topaz::Player::Player()
 
   int indexCount = 0;
 
-  // // faces
-  // int qtdFaces = mesh->mNumFaces;
-  // for (int i = 0; i < qtdFaces; i++)
-  // {
-  //   const aiFace& face = mesh->mFaces[i];
-    
-  //   for (int k = 0; k < 3; k++)
-  //   {
-  //     aiVector3D pos    = mesh->mVertices[face.mIndices[k]];
-  //     // aiVector3D uv     = mesh->mTextureCoords[0][face.mIndices[k]];
-  //     aiVector3D normal = mesh->HasNormals() ? mesh->mNormals[face.mIndices[k]] : aiVector3D(1.0f, 1.0f, 1.0f);
-
-  //     data.push_back(pos);
-  //     data.push_back(normal);
-  //     // data.insert(data.end(), (BYTE*)&pos, (BYTE*)&pos + sizeof(aiVector3D));
-  //     // data.insert(data.end(), (BYTE*)&uv, (BYTE*)&uv + sizeof(aiVector2D));
-  //     // data.insert(data.end(), (BYTE*)&normal, (BYTE*)&normal + sizeof(aiVector3D));
-  //     indexCount ++;
-  //   }
-  // }
-
-  // static const GLfloat vertices[] = {
-  //   -1.0f, -1.0f, 0.0f,
-  //   1.0f, -1.0f, 0.0f,
-  //   0.0f,  1.0f, 0.0f,
-  // };
-
-  // std::vector<GLfloat> data(std::begin(vertices), std::end(vertices));
-  // data = std::vector<GLfloat>(std::begin(vertices), std::end(vertices));
-  // data.insert(data.end(), vertices, vertices + 6);
-
   // VAO
+  // Vertex Array Object
   GLuint vao = 0;
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
 
   // EBO
+  // Element Buffer Object
   {
+    // Organizing element faces indexes into a single array
+    // so it can be uploaded to video car
     unsigned int *indices = (unsigned int *)malloc(mesh->mNumFaces * sizeof(unsigned int) * 3);
     int idx = 0;
     for (int i = 0; i < mesh->mNumFaces; ++i)
@@ -150,14 +119,15 @@ Topaz::Player::Player()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * mesh->mNumFaces * 3, indices, GL_STATIC_DRAW);
-  }  
+  }
 
   // VBO (uploading to GPU)
+  // Vertex Buffer Object
   GLuint vbo = 0;
 
   // Vertex positions
   glGenBuffers(1, &vbo);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);  
+  glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
   glBufferData(GL_ARRAY_BUFFER, sizeof(aiVector3D) * mesh->mNumVertices, &mesh->mVertices[0], GL_STATIC_DRAW );
   glEnableVertexAttribArray(0);
@@ -165,48 +135,42 @@ Topaz::Player::Player()
 
   // Normals
   glGenBuffers(1, &vbo);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo); 
+  glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
   glBufferData(GL_ARRAY_BUFFER, sizeof(aiVector3D) * mesh->mNumVertices, &mesh->mNormals[0], GL_STATIC_DRAW );
   glEnableVertexAttribArray(1);
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-  
-  GLuint program = ShaderLoader::LoadShaders("/Users/celsodantas/code/cpp/topaz/src/shaders/triangles.vert", "/Users/celsodantas/code/cpp/topaz/src/shaders/triangles.frag");
+
+  GLuint program = ShaderLoader::LoadShaders("src/shaders/triangles.vert", "src/shaders/triangles.frag");
   glUseProgram(program);
 
-  // glm::mat4 view = glm::lookAt(
-  //     glm::vec3(1.2f, 1.2f, 1.2f),
-  //     glm::vec3(0.0f, 0.0f, 0.0f),
-  //     glm::vec3(0.0f, 0.0f, 1.0f)
-  // );
-  // GLint uniView = glGetUniformLocation(program, "view");
-  // glUniformMatrix4fv(uniView, 1, GL_FALSE, glm::value_ptr(view));
+  printf("Number of faces: %i\n", mesh->mNumFaces);
 
-  printf("%i\n", mesh->mNumFaces);
-
-  glm::mat4 matrix(1.f);
-
-  glm::mat4 perspective = glm::perspective(45.f, 4.f/3.f, 0.1f, 100.f);
+  // Matrix that build the persepective
+  glm::mat4 perspective = glm::perspective(40.f, 4.f/3.f, 0.1f, 100.f);
 
   // Camera matrix
   glm::mat4 view = glm::lookAt(
-      glm::vec3(3,2,2), // Camera is at (4,3,3), in World Space
-      glm::vec3(0,0,0), // and looks at the origin
-      glm::vec3(0,1,0)  // Head is up (set to 0,-1,0 to look upside-down)
+      glm::vec3(2,  1,    0), // Camera position, in World Space
+      glm::vec3(0,  0.5f, 0), // and looks at
+      glm::vec3(0,  1,    0)  // Head is up (set to 0,-1,0 to look upside-down)
   );
 
   glm::mat4 mvp = perspective * view;
 
+  // Loading matrixes into the shader memory
   int cameraLocBuffer = glGetUniformLocation(program, "mvp");
   glUniformMatrix4fv(cameraLocBuffer, 1, GL_FALSE, glm::value_ptr(mvp));
 
-  float speed = 10.0f; // move at 1 unit per second
+  float speed = 15.0f; // move at 15 unit per second
   float last_position = 0.0f;
   int matrixLocBuffer = glGetUniformLocation(program, "matrix");
 
+  // Model matrix
+  glm::mat4 matrix(1.f);
 
-
-  while (!glfwWindowShouldClose(_window)) 
+  // Main loop
+  while (!glfwWindowShouldClose(_window))
   {
     // add a timer for doing animation
     static float previous_seconds = glfwGetTime ();
@@ -236,6 +200,4 @@ Topaz::Player::Player()
       glfwSetWindowShouldClose(_window, 1);
   }
 
-
-  // glDrawArrays(GL_TRIANGLES, 0, mesh->mNumFaces);
 }
