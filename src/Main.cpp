@@ -1,9 +1,8 @@
 #include <iostream>
 #include "engine/Engine.hpp"
-#include "Logger.hpp"
 #include "Game.hpp"
- 
-int main(int argc, char *argv[])
+
+int main()
 {
   Topaz::Engine engine;
   engine.initialize();
@@ -12,6 +11,6 @@ int main(int argc, char *argv[])
   game.run();
 
   engine.quit();
-  
+
   return 0;
 }

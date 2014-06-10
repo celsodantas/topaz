@@ -3,10 +3,12 @@
 
 Topaz::Game::Game(Engine engine) {
 
-  // Load monkey
-  Player player;
+  // Load player
+  Player player(engine);
 
-  // engine.swapBuffer();
+  // No need to call this now
+  // as the loop is inside the Player class
+  //engine.swapBuffer();
 
 }
 

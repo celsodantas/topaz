@@ -1,7 +1,6 @@
 #include <vector>
 #include <iostream>   // std::cout
 #include <string>     // std::string, std::to_string
-#include "Logger.hpp"
 #include "Player.hpp"
 
 #include <assimp/Importer.hpp>      // C++ importer interface
@@ -12,51 +11,21 @@
 #include <glfw/glfw3.h>
 #include "engine/ShaderLoader.hpp"
 
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include <glm/ext.hpp>
+// #include <glm/gtx/euler_angles.hpp>
 
 #include <unistd.h>
 
+#include "engine/Engine.hpp"
+
 typedef unsigned char BYTE;
 using namespace std;
+#define PI 3.141592653589793238462f
 
-Topaz::Player::Player()
+Topaz::Player::Player(Engine engine)
 {
-  // Initializing window
-  GLFWwindow   *_window;
-
-  int _winWidth  = 800;
-  int _winHeight = 600;
-
-    if ( glfwInit() < 0 )
-  {
-      std::cout << "Error initializing glfwInit() in " << __FILE__ << ":" << __LINE__ << std::endl;
-      exit( EXIT_FAILURE );
-  }
-
-  glfwWindowHint(GLFW_SAMPLES, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);  // yes, 3 and 2!!!
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-  if ( !(_window = glfwCreateWindow(800, 600, "Title", 0, 0)) )
-  {
-      // closeWindow();
-      glfwTerminate();
-      std::cout << "Error opening windows glfwCreateWindow() in " << __FILE__ << ":" << __LINE__ << std::endl;
-      exit( EXIT_FAILURE );
-  }
-
-  glfwMakeContextCurrent(_window);
-
-
-  ///
-  glEnable( GL_DEPTH_TEST );
-  glClearDepth( 1.0f );
-  glDepthFunc( GL_LEQUAL );
-
 
   //////////////////////////////////
   // Assimp = Collada importer
@@ -71,11 +40,11 @@ Topaz::Player::Player()
 
   if(!scene)
   {
-    Logger::print(importer.GetErrorString());
+    printf(importer.GetErrorString());
   }
   else
   {
-    Logger::print("Scene loaded");
+    printf("Scene loaded");
   }
 
   printf("  %i animations\n", scene->mNumAnimations);
@@ -104,11 +73,11 @@ Topaz::Player::Player()
     // so it can be uploaded to video car
     unsigned int *indices = (unsigned int *)malloc(mesh->mNumFaces * sizeof(unsigned int) * 3);
     int idx = 0;
-    for (int i = 0; i < mesh->mNumFaces; ++i)
+    for (uint i = 0; i < mesh->mNumFaces; ++i)
     {
         aiFace &face = mesh->mFaces[i];
         assert(face.mNumIndices == 3);
-        for (int j = 0; j < face.mNumIndices; ++j)
+        for (uint j = 0; j < face.mNumIndices; ++j)
         {
           indices[idx++] = face.mIndices[j];
         }
@@ -162,15 +131,26 @@ Topaz::Player::Player()
   int cameraLocBuffer = glGetUniformLocation(program, "mvp");
   glUniformMatrix4fv(cameraLocBuffer, 1, GL_FALSE, glm::value_ptr(mvp));
 
-  float speed = 15.0f; // move at 15 unit per second
+  float speed = 0.1f; // move at 15 unit per second
   float last_position = 0.0f;
   int matrixLocBuffer = glGetUniformLocation(program, "matrix");
 
   // Model matrix
   glm::mat4 matrix(1.f);
+  // This is for the godzilla only
+  // remove if not loading it
+  matrix = glm::scale(matrix, glm::vec3(0.01f, 0.01f, 0.01f));
+  // matrix = matrix * glm::yawPitchRoll(0, 0, 90);
+  // matrix = glm::rotate(matrix, -90.0f, glm::vec3(1,0,0));
+  // matrix = matrix * glm::eulerAngleYXZ(0.0f, 0.0f, 3.14f/2.0f);
+  // matrix = matrix * glm::eulerAngleYXZ(0.0f, - 3.1415f/2.0f, 0.0f);
+  glm::quat quaternion;
+  // quaternion = glm::normalize(quaternion);
+
+  matrix = matrix * glm::toMat4(quaternion);
 
   // Main loop
-  while (!glfwWindowShouldClose(_window))
+  while (!glfwWindowShouldClose(engine._window))
   {
     // add a timer for doing animation
     static float previous_seconds = glfwGetTime ();
@@ -183,7 +163,16 @@ Topaz::Player::Player()
       speed = -speed;
     }
 
-    matrix = glm::rotate(matrix, elapsed_seconds * speed, glm::vec3(0,1,0));
+    // matrix:
+    // matrix = glm::rotate(matrix, elapsed_seconds * speed, glm::vec3(1, 0, 0));
+
+    // quaternion
+    float angle = elapsed_seconds * speed;
+    // quaternion = glm::angleAxis(angle, glm::vec3(1, 0, 0));
+    // matrix = matrix * glm::toMat4(quaternion);
+
+    // euler angles
+    matrix = matrix * glm::yawPitchRoll(0.f, angle, 0.f);
 
     glUniformMatrix4fv(matrixLocBuffer, 1, GL_FALSE, glm::value_ptr(matrix));
     glUseProgram(program);
@@ -193,11 +182,11 @@ Topaz::Player::Player()
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glDrawElements(GL_TRIANGLES, mesh->mNumFaces*3, GL_UNSIGNED_INT, 0);
 
-    glfwSwapBuffers(_window);
+    engine.swapBuffer();
 
     glfwPollEvents();
-    if (GLFW_PRESS == glfwGetKey (_window, GLFW_KEY_ESCAPE))
-      glfwSetWindowShouldClose(_window, 1);
+    if (GLFW_PRESS == glfwGetKey (engine._window, GLFW_KEY_ESCAPE))
+      glfwSetWindowShouldClose(engine._window, 1);
   }
 
 }
