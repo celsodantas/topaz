@@ -26,6 +26,10 @@ using namespace std;
 
 Topaz::Player::Player(Engine engine)
 {
+  // Importer::Importer importer("monkey.dae");
+
+  // auto indexes = importer.getIndexes();
+  // auto vertexes = importer.getVertexes();
 
   //////////////////////////////////
   // Assimp = Collada importer
@@ -116,13 +120,13 @@ Topaz::Player::Player(Engine engine)
   printf("Number of faces: %i\n", mesh->mNumFaces);
 
   // Matrix that build the persepective
-  glm::mat4 perspective = glm::perspective(40.f, 4.f/3.f, 0.1f, 100.f);
+  glm::mat4 perspective = glm::perspective(90.f, 4.f/3.f, 0.1f, 100.f);
 
   // Camera matrix
   glm::mat4 view = glm::lookAt(
-      glm::vec3(2,  1,    0), // Camera position, in World Space
+      glm::vec3(0.f,  -2.f,   0.5f), // Camera position, in World Space
       glm::vec3(0,  0.5f, 0), // and looks at
-      glm::vec3(0,  1,    0)  // Head is up (set to 0,-1,0 to look upside-down)
+      glm::vec3(0,  0,    1)  // Head is up (set to 0,-1,0 to look upside-down)
   );
 
   glm::mat4 mvp = perspective * view;
@@ -131,7 +135,7 @@ Topaz::Player::Player(Engine engine)
   int cameraLocBuffer = glGetUniformLocation(program, "mvp");
   glUniformMatrix4fv(cameraLocBuffer, 1, GL_FALSE, glm::value_ptr(mvp));
 
-  float speed = 0.1f; // move at 15 unit per second
+  float speed = 0.5f; // move at 15 unit per second
   float last_position = 0.0f;
   int matrixLocBuffer = glGetUniformLocation(program, "matrix");
 
@@ -139,15 +143,15 @@ Topaz::Player::Player(Engine engine)
   glm::mat4 matrix(1.f);
   // This is for the godzilla only
   // remove if not loading it
-  matrix = glm::scale(matrix, glm::vec3(0.01f, 0.01f, 0.01f));
+  // matrix = glm::scale(matrix, glm::vec3(0.015f, 0.015f, 0.015f));
   // matrix = matrix * glm::yawPitchRoll(0, 0, 90);
   // matrix = glm::rotate(matrix, -90.0f, glm::vec3(1,0,0));
   // matrix = matrix * glm::eulerAngleYXZ(0.0f, 0.0f, 3.14f/2.0f);
   // matrix = matrix * glm::eulerAngleYXZ(0.0f, - 3.1415f/2.0f, 0.0f);
-  glm::quat quaternion;
+  // glm::quat quaternion;
   // quaternion = glm::normalize(quaternion);
 
-  matrix = matrix * glm::toMat4(quaternion);
+  // matrix = matrix * glm::toMat4(quaternion);
 
   // Main loop
   while (!glfwWindowShouldClose(engine._window))
@@ -172,7 +176,7 @@ Topaz::Player::Player(Engine engine)
     // matrix = matrix * glm::toMat4(quaternion);
 
     // euler angles
-    matrix = matrix * glm::yawPitchRoll(0.f, angle, 0.f);
+    matrix = matrix * glm::yawPitchRoll(0.f, 0.f, angle);
 
     glUniformMatrix4fv(matrixLocBuffer, 1, GL_FALSE, glm::value_ptr(matrix));
     glUseProgram(program);

@@ -9,7 +9,7 @@ namespace Topaz {
   public:
     Player(Engine engine);
 
-    std::string _3dModelPath = "assets/godzilla.dae";
+    std::string _3dModelPath = "assets/monkey.dae";
   };
 }
 
