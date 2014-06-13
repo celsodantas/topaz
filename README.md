@@ -11,5 +11,5 @@ A study game
 On the mac run (with Homebrew installed):
 
     brew install make
-    brew install glfw
+    brew install glfw3
     brew install assimp
