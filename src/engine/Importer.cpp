@@ -83,3 +83,23 @@ uint Topaz::Importer::getNumIndexes()
 {
   return _mesh->mNumFaces * 3;
 }
+
+int Topaz::Importer::getVerticesStride()
+{
+  return sizeof(aiVector3D) * 2;
+}
+
+int Topaz::Importer::getNormalsStride()
+{
+  return sizeof(aiVector3D) * 2;
+}
+
+void* Topaz::Importer::getVerticesStartAt()
+{
+  return 0; // no shift
+}
+
+void* Topaz::Importer::getNormalsStartAt()
+{
+  return (void *) sizeof(aiVector3D);
+}

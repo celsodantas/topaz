@@ -6,21 +6,24 @@ using namespace std;
 Topaz::Game::Game(Engine engine) : _engine(engine) {
 
   Player *player = new Player(_engine);
+  Player *player2 = new Player(_engine);
+
+  player->matrix = glm::translate(player->matrix, glm::vec3(-1, 0, 0));
+  player2->matrix = glm::translate(player2->matrix, glm::vec3(1, 0, 0));
 
   _gameObjects.push_back(player);
-
-  // No need to call this now
-  // as the loop is inside the Player class
-  //engine.swapBuffer();
-
+  _gameObjects.push_back(player2);
 }
 
 void Topaz::Game::run() {
 
   while (!glfwWindowShouldClose(_engine._window))
   {
+    _engine.prepareNewRender();
+
     for (int i = 0; i < _gameObjects.size(); i++)
     {
+
       auto object = _gameObjects[i];
       _engine.draw(object);
     }

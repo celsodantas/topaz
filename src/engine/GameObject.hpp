@@ -3,6 +3,7 @@
 
 #include "engine/Engine.hpp"
 #include "CommonHeader.hpp"
+#include "engine/Importer.hpp"
 
 namespace Topaz {
 
@@ -12,7 +13,11 @@ namespace Topaz {
     GameObject() {};
     ~GameObject() {};
 
-    virtual void setShaderUniforms() { printf("virtual method\n");};
+    virtual void setShaderUniforms() = 0;
+    virtual void animate() = 0;
+
+    // It returns the VAO reference
+    uint loadIntoGPU(Importer importer);
 
     GLuint shaderId;
     GLuint numbVertices;

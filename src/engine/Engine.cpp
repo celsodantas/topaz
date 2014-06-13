@@ -42,6 +42,11 @@ void Topaz::Engine::initGL()
   glDepthFunc( GL_LEQUAL );
 }
 
+void Topaz::Engine::prepareNewRender()
+{
+  glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
 void Topaz::Engine::swapBuffer()
 {
   glfwSwapBuffers(_window);
@@ -49,18 +54,18 @@ void Topaz::Engine::swapBuffer()
 
 void Topaz::Engine::draw(GameObject *object)
 {
+  object->animate();
+
   glUseProgram(object->shaderId);
   setShaderMVP(object->shaderId);
   object->setShaderUniforms();
 
   glBindVertexArray(object->vao);
 
-  glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
   glDrawElements(GL_TRIANGLES, object->numbVertices, GL_UNSIGNED_INT, 0);
 }
 
-void Topaz::Engine::setShaderMVP(uint shaderId)
+void Topaz::Engine::setShaderMVP(uint32 shaderId)
 {
   glm::mat4 perspective = glm::perspective(90.f, 4.f/3.f, 0.1f, 100.f);
   glm::mat4 mvp = perspective * camera();

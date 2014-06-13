@@ -11,8 +11,11 @@ namespace Topaz {
   public:
     Player(Engine engine);
     void setShaderUniforms();
+    void animate();
 
     std::string _3dModelPath = "assets/monkey.dae";
+
+    glm::mat4 matrix;
   };
 }
 

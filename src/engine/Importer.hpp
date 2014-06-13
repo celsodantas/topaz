@@ -25,6 +25,12 @@ namespace Topaz
     uint getNumbVertices();
     uint getNumIndexes();
 
+    int getVerticesStride();
+    int getNormalsStride();
+
+    void* getVerticesStartAt();
+    void* getNormalsStartAt();
+
   private:
     Assimp::Importer _importer;
     aiMesh* _mesh;

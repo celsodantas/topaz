@@ -9,20 +9,24 @@
 #include <glm/ext.hpp>
 
 #include "engine/GameObject.hpp"
+#include "CommonHeader.hpp"
 
 namespace Topaz {
+
+  class GameObject;
 
   class Engine {
   public:
     Engine() {};
 
     void initialize();
+    void prepareNewRender();
     void swapBuffer();
     void quit();
 
     void draw(GameObject *object);
 
-    void setShaderMVP(uint shaderId);
+    void setShaderMVP(uint32 shaderId);
     glm::mat4 camera();
 
     GLFWwindow   *_window;
