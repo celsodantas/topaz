@@ -4,8 +4,8 @@ BINDIR = ./bin
 CPP_COMPILER = llvm-g++
 NO_FLAGS  = -Wno-unused-variable -Wno-unused-private-field -Wno-sign-compare
 CPP_FLAGS	= -Wall -Wextra -std=c++11 -pedantic -framework OpenGL -g $(NO_FLAGS)
-HEADERS=-I/usr/local/include -Ilib -Isrc
-LDFLAGS=-L/usr/local/lib
+HEADERS=-I$(shell brew --prefix)/include -Ilib -Isrc
+LDFLAGS=-L$(shell brew --prefix)/lib
 LINKFLAGS= -lassimp -lglfw3
 CPPFILES=src/Main.cpp src/engine/Engine.cpp src/Game.cpp src/Player.cpp src/engine/Importer.cpp src/engine/GameObject.cpp
 
