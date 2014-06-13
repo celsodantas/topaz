@@ -46,3 +46,34 @@ void Topaz::Engine::swapBuffer()
 {
   glfwSwapBuffers(_window);
 }
+
+void Topaz::Engine::draw(GameObject *object)
+{
+  glUseProgram(object->shaderId);
+  setShaderMVP(object->shaderId);
+  object->setShaderUniforms();
+
+  glBindVertexArray(object->vao);
+
+  glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  glDrawElements(GL_TRIANGLES, object->numbVertices, GL_UNSIGNED_INT, 0);
+}
+
+void Topaz::Engine::setShaderMVP(uint shaderId)
+{
+  glm::mat4 perspective = glm::perspective(90.f, 4.f/3.f, 0.1f, 100.f);
+  glm::mat4 mvp = perspective * camera();
+
+  int buffer = glGetUniformLocation(shaderId, "mvp");
+  glUniformMatrix4fv(buffer, 1, GL_FALSE, glm::value_ptr(mvp));
+}
+
+glm::mat4 Topaz::Engine::camera()
+{
+  return glm::lookAt(
+      glm::vec3(0.f,  -2.f,   0.5f), // Camera position, in World Space
+      glm::vec3(0,  0.5f, 0), // and looks at
+      glm::vec3(0,  0,    1)  // Head is up (set to 0,-1,0 to look upside-down)
+  );
+}

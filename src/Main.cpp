@@ -8,7 +8,7 @@ int main()
   engine.initialize();
 
   Topaz::Game game = Topaz::Game(engine);
-  game.run();
+  // game.run();
 
   engine.quit();
 
