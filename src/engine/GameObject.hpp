@@ -1,12 +1,11 @@
 #ifndef GAME_OBJECT_HPP
 #define GAME_OBJECT_HPP
 
-#include "engine/Engine.hpp"
+#include "engine/Core.hpp"
 #include "CommonHeader.hpp"
 #include "engine/Importer.hpp"
 
 namespace Topaz {
-
   class GameObject
   {
   public:
@@ -19,9 +18,9 @@ namespace Topaz {
     // It returns the VAO reference
     uint loadIntoGPU(Importer importer);
 
-    GLuint shaderId;
-    GLuint numbVertices;
-    GLuint vao;
+    uint32 shaderId;
+    uint32 numbVertices;
+    uint32 vao;
   };
 }
 

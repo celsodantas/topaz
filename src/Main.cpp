@@ -1,10 +1,10 @@
 #include <iostream>
-#include "engine/Engine.hpp"
+#include "engine/Core.hpp"
 #include "Game.hpp"
 
 int main()
 {
-  Topaz::Engine engine;
+  Topaz::Engine::Core engine;
   engine.initialize();
 
   Topaz::Game game = Topaz::Game(engine);

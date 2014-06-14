@@ -1,10 +1,10 @@
 #define GL_GLEXT_PROTOTYPES 1
 
-#include "Engine.hpp"
+#include "Core.hpp"
 #include <iostream>
 #include <unistd.h>
 
-void Topaz::Engine::initialize()
+void Topaz::Engine::Core::initialize()
 {
     if ( glfwInit() < 0 )
   {
@@ -30,29 +30,29 @@ void Topaz::Engine::initialize()
   initGL();
 }
 
-void Topaz::Engine::quit()
+void Topaz::Engine::Core::quit()
 {
   glfwTerminate();
 }
 
-void Topaz::Engine::initGL()
+void Topaz::Engine::Core::initGL()
 {
   glEnable( GL_DEPTH_TEST );
   glClearDepth( 1.0f );
   glDepthFunc( GL_LEQUAL );
 }
 
-void Topaz::Engine::prepareNewRender()
+void Topaz::Engine::Core::prepareNewRender()
 {
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Topaz::Engine::swapBuffer()
+void Topaz::Engine::Core::swapBuffer()
 {
   glfwSwapBuffers(_window);
 }
 
-void Topaz::Engine::draw(GameObject *object)
+void Topaz::Engine::Core::draw(GameObject *object)
 {
   object->animate();
 
@@ -65,7 +65,7 @@ void Topaz::Engine::draw(GameObject *object)
   glDrawElements(GL_TRIANGLES, object->numbVertices, GL_UNSIGNED_INT, 0);
 }
 
-void Topaz::Engine::setShaderMVP(uint32 shaderId)
+void Topaz::Engine::Core::setShaderMVP(uint32 shaderId)
 {
   glm::mat4 perspective = glm::perspective(90.f, 4.f/3.f, 0.1f, 100.f);
   glm::mat4 mvp = perspective * camera();
@@ -74,7 +74,7 @@ void Topaz::Engine::setShaderMVP(uint32 shaderId)
   glUniformMatrix4fv(buffer, 1, GL_FALSE, glm::value_ptr(mvp));
 }
 
-glm::mat4 Topaz::Engine::camera()
+glm::mat4 Topaz::Engine::Core::camera()
 {
   return glm::lookAt(
       glm::vec3(0.f,  -2.f,   0.5f), // Camera position, in World Space

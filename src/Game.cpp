@@ -3,10 +3,10 @@
 
 using namespace std;
 
-Topaz::Game::Game(Engine engine) : _engine(engine) {
+Topaz::Game::Game(Engine::Core engine) : _engine(engine) {
 
-  Player *player = new Player(_engine);
-  Player *player2 = new Player(_engine);
+  Player *player = new Player();
+  Player *player2 = new Player();
 
   player->matrix = glm::translate(player->matrix, glm::vec3(-1, 0, 0));
   player2->matrix = glm::translate(player2->matrix, glm::vec3(1, 0, 0));
@@ -16,14 +16,15 @@ Topaz::Game::Game(Engine engine) : _engine(engine) {
 }
 
 void Topaz::Game::run() {
+  // This should
+  _running = true;
 
-  while (!glfwWindowShouldClose(_engine._window))
+  while (_running)
   {
     _engine.prepareNewRender();
 
     for (int i = 0; i < _gameObjects.size(); i++)
     {
-
       auto object = _gameObjects[i];
       _engine.draw(object);
     }
@@ -32,8 +33,8 @@ void Topaz::Game::run() {
 
     glfwPollEvents();
     if (GLFW_PRESS == glfwGetKey (_engine._window, GLFW_KEY_ESCAPE))
-      glfwSetWindowShouldClose(_engine._window, 1);
+      _running = false;
   }
 
-
+  glfwSetWindowShouldClose(_engine._window, 1);
 }

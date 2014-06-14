@@ -2,19 +2,21 @@
 #define GAME_HPP
 
 #include <vector>
-#include "engine/Engine.hpp"
+#include "engine/Core.hpp"
 
 namespace Topaz {
   using namespace std;
 
   class Game {
   public:
-    Game(Engine engine);
+    Game(Engine::Core engine);
     void run();
 
   private:
 
-    Engine _engine;
+    bool _running = false;
+
+    Engine::Core _engine;
     std::vector<GameObject*> _gameObjects;
   };
 }

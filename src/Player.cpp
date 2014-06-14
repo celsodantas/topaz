@@ -12,10 +12,9 @@
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 
-#include "engine/Engine.hpp"
 #include "engine/Importer.hpp"
 
-Topaz::Player::Player(Engine engine)
+Topaz::Player::Player()
 {
   Importer::Importer imp(_3dModelPath);
 

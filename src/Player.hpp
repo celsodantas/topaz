@@ -2,14 +2,13 @@
 #define PLAYER_HPP
 
 #include <iostream>
-#include "engine/Engine.hpp"
-#include "engine/GameObject.hpp"
+#include "engine/Core.hpp"
 #include "CommonHeader.hpp"
 
 namespace Topaz {
   class Player : public GameObject {
   public:
-    Player(Engine engine);
+    Player();
     void setShaderUniforms();
     void animate();
 
