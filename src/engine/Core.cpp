@@ -26,6 +26,7 @@ void Topaz::Engine::Core::initialize()
   }
 
   glfwMakeContextCurrent(_window);
+  glfwSetCursorPosCallback(_window, Core::mouseMovementsCallback);
 
   initGL();
 }
@@ -68,17 +69,16 @@ void Topaz::Engine::Core::draw(GameObject *object)
 void Topaz::Engine::Core::setShaderMVP(uint32 shaderId)
 {
   glm::mat4 perspective = glm::perspective(90.f, 4.f/3.f, 0.1f, 100.f);
-  glm::mat4 mvp = perspective * camera();
+  glm::mat4 mvp = perspective * camera.matrix;
 
   int buffer = glGetUniformLocation(shaderId, "mvp");
   glUniformMatrix4fv(buffer, 1, GL_FALSE, glm::value_ptr(mvp));
 }
 
-glm::mat4 Topaz::Engine::Core::camera()
+void Topaz::Engine::Core::mouseMovementsCallback(GLFWwindow *window, double xpos, double ypos)
 {
-  return glm::lookAt(
-      glm::vec3(0.f,  -2.f,   0.5f), // Camera position, in World Space
-      glm::vec3(0,  0.5f, 0), // and looks at
-      glm::vec3(0,  0,    1)  // Head is up (set to 0,-1,0 to look upside-down)
-  );
+  static Event event;
+  event.type = "mouse_movement";
+
+  EventGrandCentral::instance().notify(event);
 }

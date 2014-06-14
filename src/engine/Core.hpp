@@ -8,8 +8,10 @@
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 
-#include "engine/GameObject.hpp"
 #include "CommonHeader.hpp"
+#include "engine/GameObject.hpp"
+#include "engine/Camera.hpp"
+#include "engine/EventGrandCentral.hpp"
 
 namespace Topaz {
   class GameObject;
@@ -27,9 +29,9 @@ namespace Topaz {
       void draw(GameObject *object);
 
       void setShaderMVP(uint32 shaderId);
-      glm::mat4 camera();
 
       GLFWwindow   *_window;
+      Camera       camera;
 
     private:
 
@@ -37,6 +39,7 @@ namespace Topaz {
       int _winHeight = 600;
 
       void initGL();
+      static void mouseMovementsCallback(GLFWwindow *window, double xpos, double ypos);
     };
   }
 }
