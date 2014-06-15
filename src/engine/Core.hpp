@@ -39,6 +39,9 @@ namespace Topaz {
       Cursor cursor;
       void updateCursorData();
 
+      float deltaTime;
+      void updateDeltaData();
+
       GLFWwindow   *_window;
       Camera       camera;
 

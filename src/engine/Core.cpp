@@ -74,6 +74,16 @@ void Topaz::Engine::Core::setShaderMVP(uint32 shaderId)
   glUniformMatrix4fv(buffer, 1, GL_FALSE, glm::value_ptr(mvp));
 }
 
+void Topaz::Engine::Core::updateDeltaData()
+{
+  static float previous_seconds = glfwGetTime ();
+  float current_seconds = glfwGetTime ();
+  float elapsed_seconds = current_seconds - previous_seconds;
+  previous_seconds = current_seconds;
+
+  deltaTime = elapsed_seconds;
+}
+
 void Topaz::Engine::Core::updateCursorData()
 {
   static double newX, newY;

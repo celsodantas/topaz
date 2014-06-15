@@ -21,9 +21,9 @@ void Topaz::Engine::Camera::tick(Engine::Core engine)
   // Rotating camera to follow cursor
 
   Cursor cursor = engine.cursor;
-  float rotationSpeed = 0.01f;
-  float xAngle = engine.cursor.deltaX * rotationSpeed;
-  float yAngle = engine.cursor.deltaY * rotationSpeed;
+  float rotationSpeed = 0.1f;
+  float xAngle = engine.cursor.deltaX * rotationSpeed * engine.deltaTime;
+  float yAngle = engine.cursor.deltaY * rotationSpeed * engine.deltaTime;
 
   glm::quat quat_destin(glm::vec3(yAngle, 0.f, xAngle));
 
