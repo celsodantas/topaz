@@ -16,11 +16,14 @@ Topaz::Game::Game(Engine::Core engine) : _engine(engine) {
 }
 
 void Topaz::Game::run() {
-  // This should
   _running = true;
 
   while (_running)
   {
+    _engine.updateCursorData();
+    _engine.updateDeltaData();
+    _engine.camera.tick(_engine);
+
     _engine.prepareNewRender();
 
     for (int i = 0; i < _gameObjects.size(); i++)

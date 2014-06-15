@@ -68,17 +68,35 @@ void Topaz::Engine::Core::draw(GameObject *object)
 void Topaz::Engine::Core::setShaderMVP(uint32 shaderId)
 {
   glm::mat4 perspective = glm::perspective(90.f, 4.f/3.f, 0.1f, 100.f);
-  glm::mat4 mvp = perspective * camera();
+  glm::mat4 mvp = perspective * camera.matrix;
 
   int buffer = glGetUniformLocation(shaderId, "mvp");
   glUniformMatrix4fv(buffer, 1, GL_FALSE, glm::value_ptr(mvp));
 }
 
-glm::mat4 Topaz::Engine::Core::camera()
+void Topaz::Engine::Core::updateDeltaData()
 {
-  return glm::lookAt(
-      glm::vec3(0.f,  -2.f,   0.5f), // Camera position, in World Space
-      glm::vec3(0,  0.5f, 0), // and looks at
-      glm::vec3(0,  0,    1)  // Head is up (set to 0,-1,0 to look upside-down)
-  );
+  static float previous_seconds = glfwGetTime ();
+  float current_seconds = glfwGetTime ();
+  float elapsed_seconds = current_seconds - previous_seconds;
+  previous_seconds = current_seconds;
+
+  deltaTime = elapsed_seconds;
+}
+
+void Topaz::Engine::Core::updateCursorData()
+{
+  static double newX, newY;
+  static double oldX = 0, oldY = 0;
+  glfwGetCursorPos(_window, &newX, &newY);
+
+  double  deltaX, deltaY;
+
+  cursor.x = newX;
+  cursor.y = newY;
+  cursor.deltaX = newX - oldX;
+  cursor.deltaY = newY - oldY;
+
+  oldX = newX;
+  oldY = newY;
 }

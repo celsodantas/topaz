@@ -6,15 +6,23 @@
 
 #define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
-#include <glm/ext.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
-#include "engine/GameObject.hpp"
 #include "CommonHeader.hpp"
+#include "engine/GameObject.hpp"
+#include "engine/Camera.hpp"
 
 namespace Topaz {
   class GameObject;
 
   namespace Engine {
+
+    struct Cursor {
+      double x, y, deltaX, deltaY;
+    };
+
     class Core {
     public:
       Core() {};
@@ -27,9 +35,15 @@ namespace Topaz {
       void draw(GameObject *object);
 
       void setShaderMVP(uint32 shaderId);
-      glm::mat4 camera();
+
+      Cursor cursor;
+      void updateCursorData();
+
+      float deltaTime;
+      void updateDeltaData();
 
       GLFWwindow   *_window;
+      Camera       camera;
 
     private:
 
