@@ -6,18 +6,21 @@
 
 namespace Topaz {
   using namespace std;
+  class Player;
+  class Scene;
 
   class Game {
   public:
-    Game(Engine::Core engine);
-    void run();
+    Game() {};
+    void init(Engine::Core &engine);
+    void tick(Engine::Core &engine);
 
   private:
 
     bool _running = false;
 
-    Engine::Core _engine;
-    std::vector<GameObject*> _gameObjects;
+    Player *_player;
+    Scene *_scene;
   };
 }
 

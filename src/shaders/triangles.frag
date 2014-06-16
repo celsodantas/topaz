@@ -5,7 +5,7 @@ out vec3 color;
 
 void main()
 {
-  // Output color = red 
-  // color = vec3(0,1,0);
-  color = normal;
+  // Adding a little bit of colour so we don't get true black
+  // This is just for testing
+  color = normal + vec3(0.1f, 0.1f, 0.1f);
 }

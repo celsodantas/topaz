@@ -4,12 +4,10 @@
 
 int main()
 {
-  Topaz::Engine::Core engine;
-  engine.initialize();
+  Topaz::Game *game = new Topaz::Game();
 
-  Topaz::Game game = Topaz::Game(engine);
-  game.run();
-
+  Topaz::Engine::Core engine(game);
+  engine.run();
   engine.quit();
 
   return 0;

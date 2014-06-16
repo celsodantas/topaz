@@ -1,6 +1,8 @@
 #ifndef CORE_HPP
 #define CORE_HPP
 
+#include <vector>
+
 #define GLFW_INCLUDE_GLCOREARB
 #include <glfw/glfw3.h>
 
@@ -16,16 +18,18 @@
 
 namespace Topaz {
   class GameObject;
+  class Game;
 
   namespace Engine {
 
     struct Cursor {
       double x, y, deltaX, deltaY;
+      bool btn1Pressed, btn2Pressed;
     };
 
     class Core {
     public:
-      Core() {};
+      Core(Game *game);
 
       void initialize();
       void prepareNewRender();
@@ -42,6 +46,9 @@ namespace Topaz {
       float deltaTime;
       void updateDeltaData();
 
+      void run();
+      void addGameObject(GameObject *sobject);
+
       GLFWwindow   *_window;
       Camera       camera;
 
@@ -49,8 +56,13 @@ namespace Topaz {
 
       int _winWidth  = 800;
       int _winHeight = 600;
+      bool _running = true;
 
+      void initWindow();
       void initGL();
+
+      std::vector<GameObject*> _gameObjects;
+      Game *_game;
     };
   }
 }

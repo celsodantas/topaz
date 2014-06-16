@@ -7,7 +7,7 @@ CPP_FLAGS	= -Wall -Wextra -std=c++11 -pedantic -framework OpenGL -g $(NO_FLAGS)
 HEADERS=-I$(shell brew --prefix)/include -Ilib -Isrc
 LDFLAGS=-L$(shell brew --prefix)/lib
 LINKFLAGS= -lassimp -lglfw3
-CPPFILES=src/Main.cpp src/engine/Core.cpp src/engine/Camera.cpp src/Game.cpp src/Player.cpp src/engine/Importer.cpp src/engine/GameObject.cpp
+CPPFILES=src/Main.cpp src/engine/Core.cpp src/engine/Camera.cpp src/Game.cpp src/Player.cpp src/engine/Importer.cpp src/engine/GameObject.cpp src/Scene.cpp
 
 all: Game.o
 

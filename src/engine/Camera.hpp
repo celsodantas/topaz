@@ -9,6 +9,7 @@
 namespace Topaz {
   namespace Engine {
     class Core;
+    struct Cursor;
 
     class Camera  {
     public:
@@ -16,6 +17,9 @@ namespace Topaz {
       void tick(Engine::Core engine);
 
       glm::mat4 matrix;
+
+      void updateRotation(Cursor &cursor, float deltaTime);
+      void updateTranslation(Cursor &cursor, float deltaTime);
     };
   }
 }

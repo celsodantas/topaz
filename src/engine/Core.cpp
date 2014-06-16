@@ -1,12 +1,21 @@
 #define GL_GLEXT_PROTOTYPES 1
 
 #include "Core.hpp"
+#include "Game.hpp"
 #include <iostream>
 #include <unistd.h>
 
-void Topaz::Engine::Core::initialize()
+Topaz::Engine::Core::Core(Game *game) : _game(game)
 {
-    if ( glfwInit() < 0 )
+  initWindow();
+  initGL();
+
+  game->init(*this);
+}
+
+void Topaz::Engine::Core::initWindow()
+{
+  if ( glfwInit() < 0 )
   {
       std::cout << "Error initializing glfwInit() in " << __FILE__ << ":" << __LINE__ << std::endl;
       exit( EXIT_FAILURE );
@@ -26,8 +35,6 @@ void Topaz::Engine::Core::initialize()
   }
 
   glfwMakeContextCurrent(_window);
-
-  initGL();
 }
 
 void Topaz::Engine::Core::quit()
@@ -54,8 +61,6 @@ void Topaz::Engine::Core::swapBuffer()
 
 void Topaz::Engine::Core::draw(GameObject *object)
 {
-  object->animate();
-
   glUseProgram(object->shaderId);
   setShaderMVP(object->shaderId);
   object->setShaderUniforms();
@@ -99,4 +104,50 @@ void Topaz::Engine::Core::updateCursorData()
 
   oldX = newX;
   oldY = newY;
+
+  cursor.btn1Pressed = glfwGetMouseButton(_window, GLFW_MOUSE_BUTTON_1);
+  cursor.btn2Pressed = glfwGetMouseButton(_window, GLFW_MOUSE_BUTTON_2);
+}
+
+void Topaz::Engine::Core::addGameObject(GameObject *object)
+{
+  assert(object != NULL);
+  printf("[CORE] Adding game object\n");
+
+  _gameObjects.push_back(object);
+
+  printf("%lu\n", _gameObjects.size());
+}
+
+void Topaz::Engine::Core::run()
+{
+  _running = true;
+  printf("Starting loop:\n");
+  printf("Game objects: %lu\n", _gameObjects.size());
+
+  while (_running)
+  {
+    updateCursorData();
+    updateDeltaData();
+    prepareNewRender();
+
+    camera.tick(*this);
+    _game->tick(*this);
+
+
+    for (int i = 0; i < _gameObjects.size(); i++)
+    {
+      auto object = _gameObjects[i];
+      object->animate();
+      draw(object);
+    }
+
+    swapBuffer();
+
+    glfwPollEvents();
+    if (GLFW_PRESS == glfwGetKey (_window, GLFW_KEY_ESCAPE))
+      _running = false;
+  }
+
+  glfwSetWindowShouldClose(_window, 1);
 }

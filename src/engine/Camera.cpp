@@ -18,14 +18,35 @@ Topaz::Engine::Camera::Camera()
 
 void Topaz::Engine::Camera::tick(Engine::Core engine)
 {
-  // Rotating camera to follow cursor
-
   Cursor cursor = engine.cursor;
+
+  if (cursor.btn1Pressed)
+  {
+    updateRotation(cursor, engine.deltaTime);
+  }
+
+  if (cursor.btn2Pressed)
+  {
+    updateTranslation(cursor, engine.deltaTime);
+  }
+}
+
+void Topaz::Engine::Camera::updateRotation(Cursor &cursor, float deltaTime)
+{
   float rotationSpeed = 0.1f;
-  float xAngle = engine.cursor.deltaX * rotationSpeed * engine.deltaTime;
-  float yAngle = engine.cursor.deltaY * rotationSpeed * engine.deltaTime;
+  float xAngle = cursor.deltaX * rotationSpeed * deltaTime;
+  float yAngle = cursor.deltaY * rotationSpeed * deltaTime;
 
   glm::quat quat_destin(glm::vec3(yAngle, 0.f, xAngle));
 
   matrix = matrix * glm::toMat4(quat_destin);
+}
+
+void Topaz::Engine::Camera::updateTranslation(Cursor &cursor, float deltaTime)
+{
+  float translationSpeed = 0.1f;
+  float x = cursor.deltaX * translationSpeed * deltaTime;
+  float y = cursor.deltaY * translationSpeed * deltaTime;
+
+  matrix = glm::translate(matrix, glm::vec3(x, y, 0));
 }

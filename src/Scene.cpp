@@ -1,11 +1,7 @@
-#include "Player.hpp"
-
+#include "Scene.hpp"
 #include "engine/ShaderLoader.hpp"
-#include <glm/glm.hpp>
-#include <glm/gtx/euler_angles.hpp>
 
-
-Topaz::Player::Player()
+Topaz::Scene::Scene()
 {
   Importer::Importer imp(_3dModelPath);
 
@@ -17,15 +13,13 @@ Topaz::Player::Player()
   shaderId = ShaderLoader::LoadShaders("src/shaders/triangles.vert", "src/shaders/triangles.frag");
 }
 
-void Topaz::Player::setShaderUniforms()
+void Topaz::Scene::setShaderUniforms()
 {
   int matrixLocBuffer = glGetUniformLocation(shaderId, "matrix");
 
   glUniformMatrix4fv(matrixLocBuffer, 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
-void Topaz::Player::animate()
+void Topaz::Scene::animate()
 {
-  float angle = 0.01f;
-  matrix = matrix * glm::yawPitchRoll(0.f, 0.f, angle);
 }
